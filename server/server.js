@@ -7,9 +7,7 @@ let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
 
 let app = express();
-let server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-let server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -35,19 +33,19 @@ app.get('/todos', (req, res) => {
 });
 
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id',(req,res)=>{
     let id = req.params.id;
-    if (!ObjectId.isValid(id)) {
+    if(!ObjectId.isValid(id)){
         return res.status(404).send()
     }
-    Todo.findById(id).then((todo) => {
+    Todo.findById(id).then((todo)=>{
         res.send({todo})
-    }).catch(e => {
+    }).catch(e=>{
         res.send(e)
     })
 });
 
 
-app.listen(server_port,server_ip_address, () => {
+app.listen(port, () => {
     console.log(`Server is up on port ${port}`)
 });
