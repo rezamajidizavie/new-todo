@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-app.use('/',express.static('public'));
+app.use('/', express.static('public'));
 app.post('/todos', (req, res) => {
     let todo = new Todo({
         text: req.body.text
@@ -76,13 +76,27 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, {$set: body},{new:true}).then((todo)=>{
-        if (!todo){
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if (!todo) {
             return res.status(404).send()
         }
         res.send({todo})
-    }).catch(()=>{
+    }).catch(() => {
         res.status(400).send()
+    })
+});
+
+app.post('/users', (req, res) => {
+    let body = _.pick(req.body, ['email', 'password']);
+    let user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+
+    }).then((token) => {
+        res.header('x-auth').send(user)
+    }).catch((e) => {
+        res.status(400).send(e)
     })
 });
 
